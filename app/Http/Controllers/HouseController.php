@@ -7,6 +7,11 @@ use App\Models\House;
 
 class HouseController extends Controller
 {
+    public function getAll()
+    {
+        $houses = House::with('user','category')->orderBy('id')->get();
+        return response()->json($houses);
+    }
 
     public function create(CreateHouseRequest $request,House $house)
     {

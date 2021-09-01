@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 Route::prefix('/house')->group(function (){
     Route::post('/create',[\App\Http\Controllers\HouseController::class,'create']);
+    Route::get('/get-all',[\App\Http\Controllers\HouseController::class,'getAll']);
 });
