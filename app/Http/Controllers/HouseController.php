@@ -10,8 +10,14 @@ class HouseController extends Controller
 {
     public function getAll()
     {
-        $houses = House::with('user','category')->orderBy('id')->get();
+        $houses = House::with('user','category')->get();
         return response()->json($houses);
+    }
+
+    public function getById($id)
+    {
+        $house = House::with('user','category')->find($id);
+        return response()->json($house);
     }
 
     public function create(CreateHouseRequest $request,House $house)
