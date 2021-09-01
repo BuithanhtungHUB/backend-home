@@ -11,16 +11,14 @@ class HouseController extends Controller
 {
     public function getAll()
     {
-        $houses = House::with('user', 'category')->get();
+        $houses = House::with('user', 'category','images')->get();
         return response()->json($houses);
     }
 
     public function getById($id)
     {
-        $house = House::with('user', 'category')->find($id);
-        $images = Image::where('house_id', $id)->get();
-        $data = [$house, $images];
-        return response()->json($data);
+        $house = House::with('user', 'category','images')->find($id);
+        return response()->json($house);
     }
 
     public function create(CreateHouseRequest $request, House $house, Image $image)
@@ -35,7 +33,6 @@ class HouseController extends Controller
             $house->bathroom = $request->bathroom;
             $house->description = $request->description;
             $house->price = $request->price;
-            $house->image = $request->image;
             $house->status = $request->status;
             $house->save();
             $image->name = $house->name;
