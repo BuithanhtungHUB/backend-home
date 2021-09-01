@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +15,7 @@ use App\Http\Controllers\AuthController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
+
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::middleware(['auth:api'])->group(function () {
@@ -25,5 +23,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
         Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
+    });
+    Route::prefix('/house')->group(function () {
+        Route::post('/create', [HouseController::class, 'create']);
+        Route::get('/get-all', [HouseController::class, 'getAll']);
+        Route::get('/get-id/{id}', [HouseController::class, 'getById']);
     });
 });
