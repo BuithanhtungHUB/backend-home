@@ -20,11 +20,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(),422);
         }
 
         if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized']);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $this->createNewToken($token);
@@ -33,14 +33,14 @@ class AuthController extends Controller
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'user_name' => 'required|string|between:2,100',
-            'phone' => 'required|regex:/(0)+[0-9]{8}\b/',
+            'phone' => 'required|regex:/(0)+[0-9]{9}\b/',
             'password' => 'required|confirmed|between:6,8',
             'email' => 'required|email',
             'role' => 'required'
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson());
+            return response()->json($validator->errors()->toJson(),400);
         }
 
         $user = User::create(array_merge(
