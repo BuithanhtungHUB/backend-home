@@ -17,4 +17,12 @@ class UserController extends Controller
         $data = ['user' => $user, 'houses' => $houses];
         return response()->json($data);
     }
+
+    public function updateHouse($id, Request $request)
+    {
+        $house = House::find($id);
+        $house->status = $request->status;
+        $house->save();
+        return response()->json(['success'=>'update thanh cong']);
+    }
 }

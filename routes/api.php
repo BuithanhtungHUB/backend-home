@@ -33,5 +33,6 @@ Route::middleware(['auth:api'])->group(function () {
     });
     Route::prefix('/user')->group(function () {
         Route::get('/house-list', [UserController::class, 'getHouseList']);
+        Route::post('/update-house/{id}', [UserController::class, 'updateHouse']);
     });
 });
