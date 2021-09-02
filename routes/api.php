@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,5 +29,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
         Route::get('/get-all', [HouseController::class, 'getAll']);
         Route::get('/get-id/{id}', [HouseController::class, 'getById']);
+        Route::post('/search', [HouseController::class, 'search']);
+    });
+    Route::prefix('/user')->group(function () {
+        Route::get('/get-house', [UserController::class, 'getHouse']);
     });
 });
