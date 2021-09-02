@@ -29,7 +29,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
         Route::get('/get-all', [HouseController::class, 'getAll']);
         Route::get('/get-id/{id}', [HouseController::class, 'getById']);
-        Route::post('/search', [HouseController::class, 'search']);
     });
     Route::prefix('/user')->group(function () {
         Route::get('/house-list', [UserController::class, 'getHouseList']);
