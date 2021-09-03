@@ -9,24 +9,22 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(){
 //        $this ->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
+    public function login(Request $request) {
+        $validator = Validator::make($request ->all(), [
             'user_name' => 'required|string',
             'password' => 'required|string|min:6'
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(),422);
         }
 
-        if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized']);
+        if (! $token = auth()->attempt($validator->validated())) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $this->createNewToken($token);
@@ -36,14 +34,14 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_name' => 'required|string|between:2,100',
-            'phone' => 'required|regex:/(0)+[0-9]{8}\b/',
+            'phone' => 'required|regex:/(0)+[0-9]{9}\b/',
             'password' => 'required|confirmed|between:6,8',
             'email' => 'required|email',
             'role' => 'required'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson());
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(),400);
         }
 
         $user = User::create(array_merge(
@@ -68,6 +66,25 @@ class AuthController extends Controller
         return $this->createNewToken(auth()->refresh());
     }
 
+    public function UpdateUserProfile(Request $request) {
+        $validator = Validator::make($request->all(),[
+            'full_name' => 'required|string|between:2,100',
+            'phone' => 'required|regex:/(0)+[0-9]{9}\b/',
+            'address'=>'required',
+        ]);
+        if (!$validator->fails()){
+            $user =User::find(auth()->user()->id);
+            $user->full_name= $request->full_name;
+            $user->phone= $request->phone;
+            $user->avatar = $request->avatar;
+            $user->address= $request->address;
+            $user->save();
+            return response()->json($user);
+        }else{
+            return response()->json($validator->errors());
+        }
+    }
+
     public function userProfile()
     {
         return response()->json(auth()->user());
@@ -82,4 +99,5 @@ class AuthController extends Controller
             'user' => auth()->user()
         ]);
     }
+
 }
