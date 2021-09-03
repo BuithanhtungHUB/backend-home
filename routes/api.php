@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +34,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('/user')->group(function () {
         Route::get('/house-list', [UserController::class, 'getHouseList']);
         Route::post('/update-house/{id}', [UserController::class, 'updateHouse']);
+    });
+    Route::prefix('/order')->group(function (){
+        Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
+        Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
+        Route::get('/get-list',[OrderController::class,'getList']);
     });
 });
