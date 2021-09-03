@@ -22,7 +22,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
-        Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
+        Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
+        Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);

@@ -63,7 +63,27 @@ class AuthController extends Controller
         return $this->createNewToken(auth()->refresh());
     }
 
-    public function userProfile() {
+    public function UpdateUserProfile(Request $request) {
+        $validator = Validator::make($request->all(),[
+            'full_name' => 'required|string|between:2,100',
+            'phone' => 'required|regex:/(0)+[0-9]{9}\b/',
+            'address'=>'required',
+        ]);
+        if (!$validator->fails()){
+            $user =User::find(auth()->user()->id);
+            $user->full_name= $request->full_name;
+            $user->phone= $request->phone;
+            $user->avatar = $request->avatar;
+            $user->address= $request->address;
+            $user->save();
+            return response()->json($user);
+        }else{
+            return response()->json($validator->errors());
+        }
+    }
+
+    public function userProfile()
+    {
         return response()->json(auth()->user());
     }
 
@@ -75,4 +95,5 @@ class AuthController extends Controller
             'user' => auth()->user()
         ]);
     }
+
 }
