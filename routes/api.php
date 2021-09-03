@@ -5,6 +5,7 @@ use App\Http\Controllers\HouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +23,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
+        Route::post('/change-password', [AuthController::class, 'changePassword'])->name('auth.changePassword');
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
@@ -31,3 +33,5 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-id/{id}', [HouseController::class, 'getById']);
     });
 });
+
+
