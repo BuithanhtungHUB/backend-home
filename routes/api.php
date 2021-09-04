@@ -44,6 +44,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-list',[OrderController::class,'getList']);
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
+        Route::post('/auto-update/{date}', [OrderController::class, 'autoUpdate']);
     });
 });
 

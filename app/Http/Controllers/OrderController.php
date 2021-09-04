@@ -6,6 +6,7 @@ use App\Models\House;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -52,9 +53,6 @@ class OrderController extends Controller
         if ($request->status == 'xác nhận') {
             $order->status = $request->status;
             $order->save();
-            $house = House::find($order->house_id);
-            $house->status = 'đã cho thuê';
-            $house->save();
             return response()->json(['success' => 'Bạn đã xác nhận']);
         } else {
             $order->status = 'không xác nhận';
@@ -88,9 +86,6 @@ class OrderController extends Controller
             if ($order->status == 'xác nhận') {
                 $order->status = 'không xác nhận';
                 $order->save();
-                $house = House::find($order->house_id);
-                $house->status = 'còn trống';
-                $house->save();
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
             }
             if ($order->status == 'chờ xác nhận') {
@@ -98,9 +93,40 @@ class OrderController extends Controller
                 $order->save();
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
             }
-            return response()->json(['success' => 'status đang ở trạng thái khác ']);
-
         }
         return response()->json('Bạn chỉ được phép hủy trước thời gian thuê 1 ngày');
+    }
+
+    public function autoUpdate($date)
+    {
+        $orders = Order::with('house', 'user')->get();
+        foreach ($orders as $order) {
+            if ($order->status == 'xác nhận' && $date >= $order->start_date) {
+                $house = House::find($order->house->id);
+                $house->status = 'đã cho thuê';
+                $house->save();
+            }
+            if ($order->status == 'xác nhận' && $date < $order->start_date) {
+                $house = House::find($order->house->id);
+                $house->status = 'còn trống';
+                $house->save();
+            }
+        }
+        foreach ($orders as $order) {
+            if ($order->status == 'xác nhận' && $date > $order->end_date) {
+                $order->status = 'đã thanh toán';
+                $order->save();
+                $house = House::find($order->house->id);
+                $house->status = 'còn trống';
+                $house->save();
+            }
+        }
+        $rentMost = Order::select('house_id', DB::raw('count(id) as count'))
+            ->with('house')
+            ->where('status','=','đã thanh toán')
+            ->groupBy('house_id')
+            ->orderBy('count', 'DESC')
+            ->limit(5)->get();
+        return $rentMost;
     }
 }
