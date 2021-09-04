@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\House;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -67,5 +68,39 @@ class OrderController extends Controller
     {
         $orders = auth()->user()->ordersManager;
         return response()->json($orders);
+    }
+
+    public function rentHistory()
+    {
+        $id = auth()->user()->id;
+        $user = User::find($id);
+        $orders = Order::with('house')->where('user_id', $id)->get();
+        $data = ['user' => $user, 'order' => $orders];
+        return response()->json($data);
+    }
+
+    public function cancelRent($id)
+    {
+        $order = Order::find($id);
+        $rent_date = date('Y-m-d', strtotime("-2 day", strtotime($order->start_date)));
+        $date = date('Y-m-d');
+        if ($date <= $rent_date) {
+            if ($order->status == 'xác nhận') {
+                $order->status = 'không xác nhận';
+                $order->save();
+                $house = House::find($order->house_id);
+                $house->status = 'còn trống';
+                $house->save();
+                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+            }
+            if ($order->status == 'chờ xác nhận') {
+                $order->status = 'không xác nhận';
+                $order->save();
+                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+            }
+            return response()->json(['success' => 'status đang ở trạng thái khác ']);
+
+        }
+        return response()->json('Bạn chỉ được phép hủy trước thời gian thuê 1 ngày');
     }
 }
