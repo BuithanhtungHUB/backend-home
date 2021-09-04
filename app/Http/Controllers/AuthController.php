@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
 //        $this ->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request) {
-        $validator = Validator::make($request ->all(), [
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'user_name' => 'required|string',
             'password' => 'required|string|min:6'
         ]);
@@ -39,6 +42,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'role' => 'required'
         ]);
+
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(),400);
@@ -65,6 +69,7 @@ class AuthController extends Controller
     {
         return $this->createNewToken(auth()->refresh());
     }
+
 
     public function UpdateUserProfile(Request $request) {
         $validator = Validator::make($request->all(),[
@@ -100,4 +105,36 @@ class AuthController extends Controller
         ]);
     }
 
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required|string|between:6,8',
+            'new_password' => 'required|string|confirmed|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson());
+        }
+        $userId = auth()->user()->id;
+        $userPassword = auth()->user()->password;
+        if (strcmp($request->get('old_password'), $request->get('new_password')) == 0) {
+            return response()->json(
+                [
+                    'message' => 'old password and new password are the same'
+                ]);
+        }
+        if (Hash::check($request->get('old_password'), $userPassword)) {
+            $user = User::where('id', $userId)->update(
+                ['password' => bcrypt($request->new_password)]
+            );
+            return response()->json([
+                'message' => 'User successfully change password',
+                'user' => $user], 201);
+        }
+        else {
+            return response()->json([
+                'message' => 'incorrect old password'
+            ]);
+        }
+    }
 }
