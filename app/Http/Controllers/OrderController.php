@@ -13,7 +13,9 @@ class OrderController extends Controller
     {
         $date = $this->dateDifference($request->start_date, $request->end_date);
         $user = auth()->user();
-        $house = House::find($id);
+        $house = House::with('user')->find($id);
+        $email = $house->user->email;
+        $content = 'order';
         if (!($user->id == $house->user_id)) {
             if ($house->status == 'còn trống') {
                 $order->user_id = $user->id;
@@ -23,6 +25,7 @@ class OrderController extends Controller
                 $order->total_price = (int)($date * $house->price);
                 $order->status = 'chờ xác nhận';
                 $order->save();
+                (new MailController)->sendMail($email,$content);
                 return response()->json(['success' => 'thành công', $user]);
             }
         } else {
@@ -48,17 +51,24 @@ class OrderController extends Controller
 
     public function rentConfirm($id, Request $request)
     {
-        $order = Order::find($id);
+        $order = Order::with('user')->find($id);
+        $email = $order->user->email;
         if ($request->status == 'xác nhận') {
+            $content = 'approved';
             $order->status = $request->status;
             $order->save();
             $house = House::find($order->house_id);
+            // bỏ
             $house->status = 'đã cho thuê';
             $house->save();
+            //
+            (new MailController)->sendMail($email,$content);
             return response()->json(['success' => 'Bạn đã xác nhận']);
         } else {
+            $content = 'not approved';
             $order->status = 'không xác nhận';
             $order->save();
+            (new MailController)->sendMail($email,$content);
             return response()->json(['error' => 'Bạn đã hủy xác nhận']);
 
         }
@@ -84,13 +94,18 @@ class OrderController extends Controller
         $order = Order::find($id);
         $rent_date = date('Y-m-d', strtotime("-2 day", strtotime($order->start_date)));
         $date = date('Y-m-d');
+        $content = 'cancel';
         if ($date <= $rent_date) {
             if ($order->status == 'xác nhận') {
                 $order->status = 'không xác nhận';
                 $order->save();
-                $house = House::find($order->house_id);
+                $house = House::with('user')->find($order->house_id);
+                // bỏ
                 $house->status = 'còn trống';
                 $house->save();
+                //
+                $email = $house->user->email;
+                (new MailController)->sendMail($email,$content);
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
             }
             if ($order->status == 'chờ xác nhận') {

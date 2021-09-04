@@ -9,6 +9,7 @@
 </head>
 <body>
 <br/>
-You have an order. Please go to home from home website for more detail.
+{{$detail}}
+<a href="http://127.0.0.1:8001/">Home from home</a>
 </body>
 </html>

@@ -28,7 +28,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
         Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('auth.changePassword');
-        Route::get('/sendmail', [MailController::class, 'sendMail']);
+//        Route::get('/sendmail', [MailController::class, 'sendMail']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
