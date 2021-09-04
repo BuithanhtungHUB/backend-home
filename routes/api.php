@@ -46,6 +46,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
         Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
         Route::get('/get-list',[OrderController::class,'getList']);
+        Route::get('/rent-history', [OrderController::class, 'rentHistory']);
+        Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
     });
 });
 
