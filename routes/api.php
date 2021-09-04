@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MailController;
@@ -27,6 +29,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('auth.changePassword');
         Route::get('/sendmail', [MailController::class, 'sendMail']);
+        Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
+        Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
@@ -34,6 +38,15 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-id/{id}', [HouseController::class, 'getById']);
     });
 
+    Route::prefix('/user')->group(function () {
+        Route::get('/house-list', [UserController::class, 'getHouseList']);
+        Route::post('/update-house/{id}', [UserController::class, 'updateHouse']);
+    });
+    Route::prefix('/order')->group(function (){
+        Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
+        Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
+        Route::get('/get-list',[OrderController::class,'getList']);
+    });
 });
 
 
