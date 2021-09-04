@@ -58,10 +58,10 @@ class OrderController extends Controller
             $content = 'approved';
             $order->status = $request->status;
             $order->save();
-            $house = House::find($order->house_id);
+//            $house = House::find($order->house_id);
             // bỏ
-            $house->status = 'đã cho thuê';
-            $house->save();
+//            $house->status = 'đã cho thuê';
+//            $house->save();
             //
             (new MailController)->sendMail($email,$content);
             return response()->json(['success' => 'Bạn đã xác nhận']);
@@ -102,8 +102,8 @@ class OrderController extends Controller
                 $order->save();
                 $house = House::with('user')->find($order->house_id);
                 // bỏ
-                $house->status = 'còn trống';
-                $house->save();
+//                $house->status = 'còn trống';
+//                $house->save();
                 //
                 $email = $house->user->email;
                 (new MailController)->sendMail($email,$content);
