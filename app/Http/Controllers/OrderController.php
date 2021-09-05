@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\House;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -12,7 +14,9 @@ class OrderController extends Controller
     {
         $date = $this->dateDifference($request->start_date, $request->end_date);
         $user = auth()->user();
-        $house = House::find($id);
+        $house = House::with('user')->find($id);
+        $email = $house->user->email;
+        $content = 'order';
         if (!($user->id == $house->user_id)) {
             if ($house->status == 'còn trống') {
                 $order->user_id = $user->id;
@@ -22,6 +26,7 @@ class OrderController extends Controller
                 $order->total_price = (int)($date * $house->price);
                 $order->status = 'chờ xác nhận';
                 $order->save();
+                (new MailController)->sendMail($email,$content);
                 return response()->json(['success' => 'thành công', $user]);
             }
         } else {
@@ -47,17 +52,19 @@ class OrderController extends Controller
 
     public function rentConfirm($id, Request $request)
     {
-        $order = Order::find($id);
+        $order = Order::with('user')->find($id);
+        $email = $order->user->email;
         if ($request->status == 'xác nhận') {
+            $content = 'approved';
             $order->status = $request->status;
             $order->save();
-            $house = House::find($order->house_id);
-            $house->status = 'đã cho thuê';
-            $house->save();
+            (new MailController)->sendMail($email,$content);
             return response()->json(['success' => 'Bạn đã xác nhận']);
         } else {
+            $content = 'not approved';
             $order->status = 'không xác nhận';
             $order->save();
+            (new MailController)->sendMail($email,$content);
             return response()->json(['error' => 'Bạn đã hủy xác nhận']);
 
         }
@@ -67,5 +74,78 @@ class OrderController extends Controller
     {
         $orders = auth()->user()->ordersManager;
         return response()->json($orders);
+    }
+
+    public function rentHistory()
+    {
+        $id = auth()->user()->id;
+        $user = User::find($id);
+        $orders = Order::with('house')->where('user_id', $id)->get();
+        $data = ['user' => $user, 'order' => $orders];
+        return response()->json($data);
+    }
+
+    public function cancelRent($id)
+    {
+        $order = Order::find($id);
+        $rent_date = date('Y-m-d', strtotime("-2 day", strtotime($order->start_date)));
+        $date = date('Y-m-d');
+        $content = 'cancel';
+        if ($date <= $rent_date) {
+            if ($order->status == 'xác nhận') {
+                $order->status = 'không xác nhận';
+                $order->save();
+                $house = House::with('user')->find($order->house_id);
+                $email = $house->user->email;
+                (new MailController)->sendMail($email,$content);
+                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+            }
+            if ($order->status == 'chờ xác nhận') {
+                $order->status = 'không xác nhận';
+                $order->save();
+                $house = House::with('user')->find($order->house_id);
+                $email = $house->user->email;
+                (new MailController)->sendMail($email,$content);
+                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+            }
+        }
+        return response()->json('Bạn chỉ được phép hủy trước thời gian thuê 1 ngày');
+    }
+
+    public function autoUpdate($date)
+    {
+        $orders = Order::with('house', 'user')->get();
+        foreach ($orders as $order) {
+            if ($order->status == 'xác nhận' && $date >= $order->start_date) {
+                $house = House::find($order->house->id);
+                $house->status = 'đã cho thuê';
+                $house->save();
+            }
+            if ($order->status == 'xác nhận' && $date < $order->start_date) {
+                $house = House::find($order->house->id);
+                $house->status = 'còn trống';
+                $house->save();
+            }
+        }
+        foreach ($orders as $order) {
+            if ($order->status == 'xác nhận' && $date > $order->end_date) {
+                $order->status = 'đã thanh toán';
+                $order->save();
+                $house = House::find($order->house->id);
+                $house->status = 'còn trống';
+                $house->save();
+            }
+            if ($order->status == 'chờ xác nhận' && $date >= $order->end_date) {
+                $order->status = 'không xác nhận';
+                $order->save();
+            }
+        }
+        $rentMost = Order::select('house_id', DB::raw('count(id) as count'))
+            ->with('house')
+            ->where('status','=','đã thanh toán')
+            ->groupBy('house_id')
+            ->orderBy('count', 'DESC')
+            ->limit(5)->get();
+        return $rentMost;
     }
 }

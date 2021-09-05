@@ -7,6 +7,7 @@ use App\Http\Controllers\SocialController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MailController;
 
 
 /*
@@ -29,7 +30,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
+        Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('auth.changePassword');
+//        Route::get('/sendmail', [MailController::class, 'sendMail']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
@@ -38,6 +41,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-all', [HouseController::class, 'getAll']);
         Route::get('/get-id/{id}', [HouseController::class, 'getById']);
     });
+
     Route::prefix('/user')->group(function () {
         Route::get('/house-list', [UserController::class, 'getHouseList']);
         Route::post('/update-house/{id}', [UserController::class, 'updateHouse']);
@@ -46,6 +50,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
         Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
         Route::get('/get-list',[OrderController::class,'getList']);
+        Route::get('/rent-history', [OrderController::class, 'rentHistory']);
+        Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
+        Route::post('/auto-update/{date}', [OrderController::class, 'autoUpdate']);
     });
 });
 
