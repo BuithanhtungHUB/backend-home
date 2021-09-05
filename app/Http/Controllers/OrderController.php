@@ -148,4 +148,5 @@ class OrderController extends Controller
             ->limit(5)->get();
         return $rentMost;
     }
+    // thiếu lịch sử thuê nhà 1 user
 }

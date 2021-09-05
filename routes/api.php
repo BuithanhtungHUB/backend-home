@@ -22,6 +22,10 @@ use App\Http\Controllers\MailController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/auto-update/{date}', [OrderController::class, 'autoUpdate']);
+Route::get('/get-all', [HouseController::class, 'getAll']);
+Route::get('/get-id/{id}', [HouseController::class, 'getById']);
+Route::post('/search',[HouseController::class,'search']);
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
@@ -34,8 +38,6 @@ Route::middleware(['auth:api'])->group(function () {
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
-        Route::get('/get-all', [HouseController::class, 'getAll']);
-        Route::get('/get-id/{id}', [HouseController::class, 'getById']);
     });
 
     Route::prefix('/user')->group(function () {
@@ -48,7 +50,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-list',[OrderController::class,'getList']);
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
-        Route::post('/auto-update/{date}', [OrderController::class, 'autoUpdate']);
     });
 });
 
