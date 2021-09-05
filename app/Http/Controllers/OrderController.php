@@ -58,11 +58,6 @@ class OrderController extends Controller
             $content = 'approved';
             $order->status = $request->status;
             $order->save();
-//            $house = House::find($order->house_id);
-            // bỏ
-//            $house->status = 'đã cho thuê';
-//            $house->save();
-            //
             (new MailController)->sendMail($email,$content);
             return response()->json(['success' => 'Bạn đã xác nhận']);
         } else {
@@ -101,10 +96,6 @@ class OrderController extends Controller
                 $order->status = 'không xác nhận';
                 $order->save();
                 $house = House::with('user')->find($order->house_id);
-                // bỏ
-//                $house->status = 'còn trống';
-//                $house->save();
-                //
                 $email = $house->user->email;
                 (new MailController)->sendMail($email,$content);
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
@@ -112,6 +103,9 @@ class OrderController extends Controller
             if ($order->status == 'chờ xác nhận') {
                 $order->status = 'không xác nhận';
                 $order->save();
+                $house = House::with('user')->find($order->house_id);
+                $email = $house->user->email;
+                (new MailController)->sendMail($email,$content);
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
             }
         }
@@ -140,6 +134,10 @@ class OrderController extends Controller
                 $house = House::find($order->house->id);
                 $house->status = 'còn trống';
                 $house->save();
+            }
+            if ($order->status == 'chờ xác nhận' && $date >= $order->end_date) {
+                $order->status = 'không xác nhận';
+                $order->save();
             }
         }
         $rentMost = Order::select('house_id', DB::raw('count(id) as count'))
