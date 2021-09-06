@@ -88,7 +88,7 @@ class OrderController extends Controller
     {
         $id = auth()->user()->id;
         $user = User::find($id);
-        $orders = Order::with('house')->where('user_id', $id)->get();
+        $orders = Order::with('house')->where('user_id', $id)->OrderBy('created_at','DESC')->get();
         $data = ['user' => $user, 'order' => $orders];
         return response()->json($data);
     }
@@ -153,11 +153,11 @@ class OrderController extends Controller
             }
         }
         $rentMost = Order::select('house_id', DB::raw('count(id) as count'))
-            ->with('house')
+            ->with('house','images')
             ->where('status', '=', 'đã thanh toán')
             ->groupBy('house_id')
             ->orderBy('count', 'DESC')
             ->limit(5)->get();
-        return $rentMost;
+        return response()->json($rentMost);
     }
 }

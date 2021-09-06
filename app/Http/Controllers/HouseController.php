@@ -52,7 +52,7 @@ class HouseController extends Controller
     // user search house ( thiếu check thời gian user search phòng đang ở status nào )
     public function search(Request $request)
     {
-        $houses = House::with('category', 'user')
+        $houses = House::with('category', 'user','images')
             ->where('category_id', +$request->category)
             ->where('price', '>=', +$request->prMin)
             ->where('price', '<=', +$request->prMax)
