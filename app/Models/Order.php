@@ -18,4 +18,9 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function images()
+    {
+        return $this->hasOneThrough(Image::class,House::class,'id','house_id','house_id');
+    }
 }

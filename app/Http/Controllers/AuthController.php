@@ -45,7 +45,7 @@ class AuthController extends Controller
 
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(),400);
+            return response()->json($validator->errors(),400);
         }
 
         $user = User::create(array_merge(
@@ -113,7 +113,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson());
+            return response()->json($validator->errors(),422);
         }
         $userId = auth()->user()->id;
         $userPassword = auth()->user()->password;
@@ -121,7 +121,7 @@ class AuthController extends Controller
             return response()->json(
                 [
                     'message' => 'old password and new password are the same'
-                ]);
+                ],422);
         }
         if (Hash::check($request->get('old_password'), $userPassword)) {
             $user = User::where('id', $userId)->update(
@@ -134,7 +134,7 @@ class AuthController extends Controller
         else {
             return response()->json([
                 'message' => 'incorrect old password'
-            ]);
+            ],401);
         }
     }
 }

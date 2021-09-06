@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateHouseRequest;
 use App\Models\House;
 use App\Models\Image;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -16,12 +17,14 @@ class HouseController extends Controller
         return response()->json($houses);
     }
 
+    // thông tin 1 house
     public function getById($id)
     {
         $house = House::with('user', 'category', 'images')->find($id);
         return response()->json($house);
     }
 
+    // manager tạo house
     public function create(CreateHouseRequest $request, House $house, Image $image)
     {
         $user = User::find($request->user_id);
@@ -44,5 +47,20 @@ class HouseController extends Controller
         } else {
             return response()->json(['error' => 'bạn không phải là manager']);
         }
+    }
+
+    // user search house ( thiếu check thời gian user search phòng đang ở status nào )
+    public function search(Request $request)
+    {
+        $houses = House::with('category', 'user','images')
+            ->where('category_id', +$request->category)
+            ->where('price', '>=', +$request->prMin)
+            ->where('price', '<=', +$request->prMax)
+            ->where('bedroom', '>=', +$request->beMin)
+            ->where('bedroom', '<=', +$request->beMax)
+            ->where('bathroom', '>=', +$request->baMin)
+            ->where('bathroom', '<=', +$request->baMax)
+            ->where('address', 'LIKE', '%' . $request->address . '%')->get();
+        return response()->json($houses);
     }
 }
