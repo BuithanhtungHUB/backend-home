@@ -123,8 +123,9 @@ class OrderController extends Controller
 
     // auto update trạng thái khi house tới thời gian start và end khi chủ nhà xác nhận cho thuê
     // (lấy ra top5 house có lượt thuê nhiều nhất)
-    public function autoUpdate($date)
+    public function autoUpdate()
     {
+        $date = date('Y-m-d');
         $orders = Order::with('house', 'user')->get();
         foreach ($orders as $order) {
             if ($order->status == 'xác nhận' && $date >= $order->start_date) {
@@ -134,11 +135,11 @@ class OrderController extends Controller
             }
             if ($order->status == 'xác nhận' && $date < $order->start_date) {
                 $house = House::find($order->house->id);
-                $house->status = 'còn trống';
-                $house->save();
+                if (!$house->status=='đã cho thuê'){
+                    $house->status = 'còn trống';
+                    $house->save();
+                }
             }
-        }
-        foreach ($orders as $order) {
             if ($order->status == 'xác nhận' && $date > $order->end_date) {
                 $order->status = 'đã thanh toán';
                 $order->save();

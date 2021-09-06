@@ -22,7 +22,7 @@ use App\Http\Controllers\MailController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/auto-update/{date}', [OrderController::class, 'autoUpdate']);
+Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
 Route::post('/search',[HouseController::class,'search']);
