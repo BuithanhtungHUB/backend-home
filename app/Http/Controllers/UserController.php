@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
+    // house của user manager
     public function getHouseList()
     {
         if (auth()->user()->role == 'manager') {
@@ -23,6 +24,7 @@ class UserController extends Controller
         }
     }
 
+    // chủ update status house
     public function updateHouse($id, Request $request)
     {
         $house = House::find($id);

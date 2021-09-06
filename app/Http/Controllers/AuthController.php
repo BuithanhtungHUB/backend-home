@@ -134,7 +134,7 @@ class AuthController extends Controller
         else {
             return response()->json([
                 'message' => 'incorrect old password'
-            ]);
+            ],401);
         }
     }
 }

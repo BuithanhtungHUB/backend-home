@@ -17,12 +17,14 @@ class HouseController extends Controller
         return response()->json($houses);
     }
 
+    // thông tin 1 house
     public function getById($id)
     {
         $house = House::with('user', 'category', 'images')->find($id);
         return response()->json($house);
     }
 
+    // manager tạo house
     public function create(CreateHouseRequest $request, House $house, Image $image)
     {
         $user = User::find($request->user_id);
@@ -47,6 +49,7 @@ class HouseController extends Controller
         }
     }
 
+    // user search house ( thiếu check thời gian user search phòng đang ở status nào )
     public function search(Request $request)
     {
         $houses = House::with('category', 'user')
@@ -58,6 +61,6 @@ class HouseController extends Controller
             ->where('bathroom', '>=', +$request->baMin)
             ->where('bathroom', '<=', +$request->baMax)
             ->where('address', 'LIKE', '%' . $request->address . '%')->get();
-//        return response()->json($houses);
+        return response()->json($houses);
     }
 }
