@@ -8,6 +8,7 @@ use App\Models\Image;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HouseController extends Controller
 {
@@ -52,15 +53,24 @@ class HouseController extends Controller
     // user search house ( thiếu check thời gian user search phòng đang ở status nào )
     public function search(Request $request)
     {
+        $house_id = [];
+        $orders = Order::where('status', '=', 'xác nhận')->get();
+        foreach ($orders as $order) {
+            if ($request->start_date >= $order->start_date && $request->start_date <= $order->end_date ||
+                $request->end_date >= $order->start_date && $request->end_date <= $order->end_date ||
+                !($order->start_date <= $request->end_date && $order->start_date >= $request->start_date) ||
+                !($order->end_date <= $request->end_date && $order->end_date >= $request->start_date)
+            ) {
+                array_push($house_id, $order->house_id);
+            }
+        }
         $houses = House::with('category', 'user','images')
-            ->where('category_id', +$request->category)
+            ->whereNotIn('id', $house_id)
             ->where('price', '>=', +$request->prMin)
             ->where('price', '<=', +$request->prMax)
-            ->where('bedroom', '>=', +$request->beMin)
-            ->where('bedroom', '<=', +$request->beMax)
-            ->where('bathroom', '>=', +$request->baMin)
-            ->where('bathroom', '<=', +$request->baMax)
+            ->orwhere('bedroom', '=', +$request->bedroom)
+            ->orwhere('bathroom', '=', +$request->bathroom)
             ->where('address', 'LIKE', '%' . $request->address . '%')->get();
-        return response()->json($houses);
+        return response()->json([$house_id, $houses]);
     }
 }

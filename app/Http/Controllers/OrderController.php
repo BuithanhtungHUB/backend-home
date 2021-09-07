@@ -13,6 +13,7 @@ class OrderController extends Controller
     // user đặt thuê một ngôi nhà
     public function houseRent($id, Request $request, Order $order)
     {
+//        dd($id,$request->start_date);
         $date = $this->dateDifference($request->start_date, $request->end_date);
         $user = auth()->user();
         $house = House::with('user')->find($id);
@@ -102,7 +103,7 @@ class OrderController extends Controller
         $content = 'cancel';
         if ($date <= $rent_date) {
             if ($order->status == 'xác nhận') {
-                $order->status = 'không xác nhận';
+                $order->status = 'đã hủy';
                 $order->save();
                 $house = House::with('user')->find($order->house_id);
                 $email = $house->user->email;
@@ -110,7 +111,7 @@ class OrderController extends Controller
                 return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
             }
             if ($order->status == 'chờ xác nhận') {
-                $order->status = 'không xác nhận';
+                $order->status = 'đã hủy';
                 $order->save();
                 $house = House::with('user')->find($order->house_id);
                 $email = $house->user->email;
@@ -159,5 +160,16 @@ class OrderController extends Controller
             ->orderBy('count', 'DESC')
             ->limit(5)->get();
         return response()->json($rentMost);
+    }
+
+    // lịch sử thuê nhà của 1 house
+    public function rentHistoryHouse($id)
+    {
+        $house = House::find($id);
+        if (auth()->user()->role == 'manager'&& auth()->user()->id == $house->user_id){
+            $orders = Order::with('user')->where('house_id','=',$id)->get();
+            return response()->json($orders);
+        }
+        return response()->json(['error'=>'Bạn không phải manager']);
     }
 }
