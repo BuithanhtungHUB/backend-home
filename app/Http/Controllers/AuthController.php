@@ -23,10 +23,10 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(),422);
+            return response()->json($validator->errors(), 422);
         }
 
-        if (! $token = auth()->attempt($validator->validated())) {
+        if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -44,14 +44,16 @@ class AuthController extends Controller
         ]);
 
 
-        if($validator->fails()){
-            return response()->json($validator->errors(),400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
         $user = User::create(array_merge(
             $validator->validated(),
             ['password' => bcrypt($request->password)]
         ));
+        $user->avatar = 'https://firebasestorage.googleapis.com/v0/b/home-from-home-93499.appspot.com/o/RoomsImages%2Favatar-default.jpg?alt=media&token=ef61ecd6-070f-4b21-bb27-47b3926c8f72';
+        $user->save();
 
         return response()->json([
             'message' => 'User successfully registered',
@@ -71,21 +73,22 @@ class AuthController extends Controller
     }
 
 
-    public function UpdateUserProfile(Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function UpdateUserProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|between:2,100',
             'phone' => 'required|regex:/(0)+[0-9]{9}\b/',
-            'address'=>'required',
+            'address' => 'required',
         ]);
-        if (!$validator->fails()){
-            $user =User::find(auth()->user()->id);
-            $user->full_name= $request->full_name;
-            $user->phone= $request->phone;
+        if (!$validator->fails()) {
+            $user = User::find(auth()->user()->id);
+            $user->full_name = $request->full_name;
+            $user->phone = $request->phone;
             $user->avatar = $request->avatar;
-            $user->address= $request->address;
+            $user->address = $request->address;
             $user->save();
             return response()->json($user);
-        }else{
+        } else {
             return response()->json($validator->errors());
         }
     }
@@ -113,7 +116,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(),422);
+            return response()->json($validator->errors(), 422);
         }
         $userId = auth()->user()->id;
         $userPassword = auth()->user()->password;
@@ -121,7 +124,7 @@ class AuthController extends Controller
             return response()->json(
                 [
                     'message' => 'old password and new password are the same'
-                ],422);
+                ], 422);
         }
         if (Hash::check($request->get('old_password'), $userPassword)) {
             $user = User::where('id', $userId)->update(
@@ -130,11 +133,10 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'User successfully change password',
                 'user' => $user], 201);
-        }
-        else {
+        } else {
             return response()->json([
                 'message' => 'incorrect old password'
-            ],401);
+            ], 401);
         }
     }
 
