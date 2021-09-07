@@ -10,6 +10,12 @@
 <body>
 <br/>
 {{$detail}}
-<a href="http://127.0.0.1:8001/">Home from home</a>
+
+
+<div>------</div>
+<div> <a href="http://127.0.0.1:8000)">Home from home</a></div>
+<div>p: 0979369722</div>
+<div>add: Nhà 23, Lô TT-01 Mon City Hà Nội 129137</div>
+
 </body>
 </html>
