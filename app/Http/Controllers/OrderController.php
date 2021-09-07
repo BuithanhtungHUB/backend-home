@@ -108,7 +108,7 @@ class OrderController extends Controller
                 $house = House::with('user')->find($order->house_id);
                 $email = $house->user->email;
                 (new MailController)->sendMail($email, $content);
-                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+                return response()->json(['success' => 'Bạn đã hủy đơn thuê']);
             }
             if ($order->status == 'chờ xác nhận') {
                 $order->status = 'đã hủy';
@@ -116,10 +116,10 @@ class OrderController extends Controller
                 $house = House::with('user')->find($order->house_id);
                 $email = $house->user->email;
                 (new MailController)->sendMail($email, $content);
-                return response()->json(['success' => 'khách hàng đã hủy đơn thuê']);
+                return response()->json(['success' => 'Bạn đã hủy đơn thuê']);
             }
         }
-        return response()->json('Bạn chỉ được phép hủy trước thời gian thuê 1 ngày');
+        return response()->json(['error'=>'Bạn chỉ được phép hủy trước thời gian thuê 1 ngày']);
     }
 
     // auto update trạng thái khi house tới thời gian start và end khi chủ nhà xác nhận cho thuê
