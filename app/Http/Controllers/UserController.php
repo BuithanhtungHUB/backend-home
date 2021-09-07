@@ -16,7 +16,7 @@ class UserController extends Controller
         if (auth()->user()->role == 'manager') {
             $id = auth()->user()->id;
             $user = User::find($id);
-            $houses = House::with('category')->where('user_id', $id)->get();
+            $houses = House::with('category','images')->where('user_id', $id)->get();
             $data = ['user' => $user, 'houses' => $houses];
             return response()->json($data);
         } else {
