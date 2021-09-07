@@ -147,7 +147,7 @@ class OrderController extends Controller
                 $house->status = 'còn trống';
                 $house->save();
             }
-            if ($order->status == 'chờ xác nhận' && $date >= $order->end_date) {
+            if ($order->status == 'chờ xác nhận' && $date >= $order->start_date) {
                 $order->status = 'không xác nhận';
                 $order->save();
             }
