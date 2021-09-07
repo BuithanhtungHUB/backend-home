@@ -137,4 +137,10 @@ class AuthController extends Controller
             ],401);
         }
     }
+
+    public function getAllName()
+    {
+        $name = User::get('user_name');
+        return response()->json($name);
+    }
 }

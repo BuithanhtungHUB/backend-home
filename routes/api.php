@@ -22,6 +22,7 @@ use App\Http\Controllers\MailController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/get-all-name', [AuthController::class, 'getAllName']);
 Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
@@ -49,6 +50,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
         Route::get('/get-list',[OrderController::class,'getList']);
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
+        Route::get('/rent-history-house/{id}', [OrderController::class, 'rentHistoryHouse']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
     });
 });
