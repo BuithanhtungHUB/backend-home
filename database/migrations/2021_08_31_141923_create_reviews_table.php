@@ -20,6 +20,7 @@ class CreateReviewsTable extends Migration
             $table->unsignedBigInteger('house_id');
             $table->foreign('house_id')->references('id')->on('houses');
             $table->text('comment');
+            $table->integer('rate');
             $table->timestamps();
         });
     }
