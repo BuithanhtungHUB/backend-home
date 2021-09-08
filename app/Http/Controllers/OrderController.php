@@ -119,7 +119,7 @@ class OrderController extends Controller
                 return response()->json(['success' => 'Bạn đã hủy đơn thuê']);
             }
         }
-        return response()->json(['error'=>'Bạn chỉ được phép hủy trước thời gian thuê 1 ngày']);
+        return response()->json(['error'=>'Bạn chỉ được phép hủy trước thời gian thuê 1 ngày'],403);
     }
 
     // auto update trạng thái khi house tới thời gian start và end khi chủ nhà xác nhận cho thuê
@@ -167,9 +167,9 @@ class OrderController extends Controller
     {
         $house = House::find($id);
         if (auth()->user()->role == 'manager'&& auth()->user()->id == $house->user_id){
-            $orders = Order::with('user')->where('house_id','=',$id)->get();
+            $orders = Order::with('user','house')->where('house_id','=',$id)->get();
             return response()->json($orders);
         }
-        return response()->json(['error'=>'Bạn không phải manager']);
+        return response()->json(['error'=>'Bạn không phải manager'], 403);
     }
 }
