@@ -46,7 +46,7 @@ class HouseController extends Controller
             $image->save();
             return response()->json(['success' => 'Đăng nhà thành công']);
         } else {
-            return response()->json(['error' => 'bạn không phải là manager']);
+            return response()->json(['error' => 'bạn không phải là manager'],403);
         }
     }
 
@@ -56,21 +56,22 @@ class HouseController extends Controller
         $house_id = [];
         $orders = Order::where('status', '=', 'xác nhận')->get();
         foreach ($orders as $order) {
-            if ($request->start_date >= $order->start_date && $request->start_date <= $order->end_date ||
-                $request->end_date >= $order->start_date && $request->end_date <= $order->end_date ||
-                !($order->start_date <= $request->end_date && $order->start_date >= $request->start_date) ||
-                !($order->end_date <= $request->end_date && $order->end_date >= $request->start_date)
+            if (
+                ($request->start_date >= $order->start_date && $request->start_date <= $order->end_date) ||
+                ($request->end_date >= $order->start_date && $request->end_date <= $order->end_date) ||
+                ($order->start_date <= $request->end_date && $order->start_date >= $request->start_date) ||
+                ($order->end_date <= $request->end_date && $order->end_date >= $request->start_date)
             ) {
                 array_push($house_id, $order->house_id);
             }
         }
-        $houses = House::with('category', 'user','images')
-            ->whereNotIn('id', $house_id)
+        $houses = House::with('category','user','images')
+            ->whereNotIn('id', array_unique($house_id))
             ->where('price', '>=', +$request->prMin)
             ->where('price', '<=', +$request->prMax)
             ->orwhere('bedroom', '=', +$request->bedroom)
             ->orwhere('bathroom', '=', +$request->bathroom)
             ->where('address', 'LIKE', '%' . $request->address . '%')->get();
-        return response()->json([$house_id, $houses]);
+        return response()->json($houses);
     }
 }

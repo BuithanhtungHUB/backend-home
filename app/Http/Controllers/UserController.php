@@ -20,7 +20,7 @@ class UserController extends Controller
             $data = ['user' => $user, 'houses' => $houses];
             return response()->json($data);
         } else {
-            return response()->json(['error' => 'Bạn không phải manager']);
+            return response()->json(['error' => 'Bạn không phải manager'],403);
         }
     }
 
@@ -34,9 +34,9 @@ class UserController extends Controller
                 $house->save();
                 return response()->json(['success' => 'Update thành công']);
             }
-            return response()->json(['error' => 'House đang ở trạng thái: ' . $house->status]);
+            return response()->json(['error' => 'House đang ở trạng thái: ' . $house->status],403);
         } else {
-            return response()->json(['error' => 'Đấy không là sản phẩm của bạn']);
+            return response()->json(['error' => 'Đấy không là sản phẩm của bạn'],403);
         }
     }
 }
