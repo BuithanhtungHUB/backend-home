@@ -13,33 +13,43 @@ class OrderController extends Controller
     // user đặt thuê một ngôi nhà
     public function houseRent($id, Request $request, Order $order)
     {
-//        dd($id,$request->start_date);
         $date = $this->dateDifference($request->start_date, $request->end_date);
         $user = auth()->user();
         $house = House::with('user')->find($id);
         $email = $house->user->email;
         $content = 'order';
-        if (!($user->id == $house->user_id)) {
-            if ($house->status == 'còn trống') {
-                $order->user_id = $user->id;
-                $order->house_id = $id;
-                $order->start_date = $request->start_date;
-                $order->end_date = $request->end_date;
-                $order->total_price = (int)($date * $house->price);
-                $order->status = 'chờ xác nhận';
-                $order->save();
-                (new MailController)->sendMail($email, $content);
-                return response()->json(['success' => 'thành công', $user]);
+        $orders = Order::where('status', '=', 'xác nhận')->where('house_id', '=', $id)->get();
+        $house_id = [];
+        foreach ($orders as $ord) {
+            if (
+                ($request->start_date >= $ord->start_date && $request->start_date <= $ord->end_date) ||
+                ($request->end_date >= $ord->start_date && $request->end_date <= $ord->end_date) ||
+                ($ord->start_date <= $request->end_date && $ord->start_date >= $request->start_date) ||
+                ($ord->end_date <= $request->end_date && $ord->end_date >= $request->start_date)
+            ) {
+                if ($user->id != $house->user_id) {
+                    array_push($house_id, $ord->house_id);
+                }
             }
-        } else {
-            return response()->json(['error' => 'Đây là sản phẩm của bạn']);
         }
-        if ($house->status == 'đã cho thuê') {
-            return response()->json(['error' => 'Đã có người thuê']);
+        if (!array_unique($house_id)&& $house->status == 'còn trống'){
+            $order->user_id = $user->id;
+            $order->house_id = $id;
+            $order->start_date = $request->start_date;
+            $order->end_date = $request->end_date;
+            $order->total_price = (int)($date * $house->price);
+            $order->status = 'chờ xác nhận';
+            $order->save();
+            (new MailController)->sendMail($email, $content);
+            return response()->json(['success' => 'thành công', $user]);
+        }elseif ($house->status == 'đang nâng cấp'){
+            return response()->json(['message'=>'House đang được nâng cấp không thể thuê được'],403);
         }
-        if ($house->status == 'đang nâng cấp') {
-            return response()->json(['error' => 'House đang trong thời gian tu sửa']);
+        else{
+            return response()->json(['message'=>'House đã được cho thuê trong khoảng thời gian này'],403);
         }
+
+
     }
 
     // check thời gian khách ở bn ngày
@@ -89,7 +99,7 @@ class OrderController extends Controller
     {
         $id = auth()->user()->id;
         $user = User::find($id);
-        $orders = Order::with('house')->where('user_id', $id)->OrderBy('created_at','DESC')->get();
+        $orders = Order::with('house')->where('user_id', $id)->OrderBy('created_at', 'DESC')->get();
         $data = ['user' => $user, 'order' => $orders];
         return response()->json($data);
     }
@@ -119,7 +129,7 @@ class OrderController extends Controller
                 return response()->json(['success' => 'Bạn đã hủy đơn thuê']);
             }
         }
-        return response()->json(['error'=>'Bạn chỉ được phép hủy trước thời gian thuê 1 ngày']);
+        return response()->json(['error' => 'Bạn chỉ được phép hủy trước thời gian thuê 1 ngày'], 403);
     }
 
     // auto update trạng thái khi house tới thời gian start và end khi chủ nhà xác nhận cho thuê
@@ -136,7 +146,7 @@ class OrderController extends Controller
             }
             if ($order->status == 'xác nhận' && $date < $order->start_date) {
                 $house = House::find($order->house->id);
-                if (!$house->status=='đã cho thuê'){
+                if (!$house->status == 'đã cho thuê') {
                     $house->status = 'còn trống';
                     $house->save();
                 }
@@ -154,7 +164,7 @@ class OrderController extends Controller
             }
         }
         $rentMost = Order::select('house_id', DB::raw('count(id) as count'))
-            ->with('house','images')
+            ->with('house', 'images')
             ->where('status', '=', 'đã thanh toán')
             ->groupBy('house_id')
             ->orderBy('count', 'DESC')
@@ -166,10 +176,10 @@ class OrderController extends Controller
     public function rentHistoryHouse($id)
     {
         $house = House::find($id);
-        if (auth()->user()->role == 'manager'&& auth()->user()->id == $house->user_id){
-            $orders = Order::with('user')->where('house_id','=',$id)->get();
+        if (auth()->user()->role == 'manager' && auth()->user()->id == $house->user_id) {
+            $orders = Order::with('user', 'house')->where('house_id', '=', $id)->get();
             return response()->json($orders);
         }
-        return response()->json(['error'=>'Bạn không phải manager']);
+        return response()->json(['error' => 'Bạn không phải manager'], 403);
     }
 }
