@@ -144,6 +144,7 @@ class OrderController extends Controller
             if ($order->status == 'xác nhận' && $date > $order->end_date) {
                 $order->status = 'đã thanh toán';
                 $order->save();
+                // sendmail to write rate and comment
                 $house = House::find($order->house->id);
                 $house->status = 'còn trống';
                 $house->save();

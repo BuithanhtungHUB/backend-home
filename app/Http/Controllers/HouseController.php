@@ -73,4 +73,5 @@ class HouseController extends Controller
             ->where('address', 'LIKE', '%' . $request->address . '%')->get();
         return response()->json([$house_id, $houses]);
     }
+
 }
