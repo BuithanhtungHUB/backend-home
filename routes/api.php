@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
@@ -27,8 +28,10 @@ Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
 Route::post('/search',[HouseController::class,'search']);
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
