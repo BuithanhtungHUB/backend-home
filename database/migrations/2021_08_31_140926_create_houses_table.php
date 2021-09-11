@@ -25,7 +25,7 @@ class CreateHousesTable extends Migration
             $table->integer('bathroom');
             $table->text('description');
             $table->string('price');
-            $table->text('url_map');
+            $table->text('url_map')->nullable();
             $table->string('status');
             $table->timestamps();
         });
