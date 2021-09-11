@@ -52,6 +52,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
         Route::get('/rent-history-house/{id}', [OrderController::class, 'rentHistoryHouse']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
+        Route::get('/income-statistics/{id}',[OrderController::class,'incomeStatistics']);
     });
 });
 

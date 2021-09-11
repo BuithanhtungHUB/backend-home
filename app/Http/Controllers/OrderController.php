@@ -87,10 +87,8 @@ class OrderController extends Controller
 // danh sách những
     public function getList()
     {
-        $manager = auth()->user();
-        auth()->user()->ordersManager;
-//        auth()->user()->houses;
-//        auth()->user()->orders;
+        $manager = User::with('managers')->where('id','=',auth()->user()->id)->get();
+//
         return response()->json($manager);
     }
 
@@ -181,5 +179,68 @@ class OrderController extends Controller
             return response()->json($orders);
         }
         return response()->json(['error' => 'Bạn không phải manager'], 403);
+    }
+
+
+    public function incomeStatistics($id)
+    {
+//        $sum = Order::where('house_id','=',$id)->where('status','=','đã thanh toán')->get()->sum('total_price');
+        $manager = User::with('managers')->where('id',auth()->user()->id)->get();
+        $orders =  $manager[0]['managers'];
+        $revenue1 = 0;
+        $revenue2 = 0;
+        $revenue3 = 0;
+        $revenue4 = 0;
+        $revenue5 = 0;
+        $revenue6 = 0;
+        $revenue7 = 0;
+        $revenue8 = 0;
+        $revenue9 = 0;
+        $revenue10 = 0;
+        $revenue11 = 0;
+        $revenue12 = 0;
+        define('STATUS','đã thanh toán');
+        foreach ($orders as $order){
+            if ($order->house_id == $id && $order->status == STATUS){
+                if ($order->end_date >= '2021-01-01' && $order->end_date <= '2021-01-31'){
+                    $revenue1 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-02-01' && $order->end_date <= '2021-02-28'){
+                    $revenue2 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-03-01' && $order->end_date <= '2021-03-31'){
+                    $revenue3 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-04-01' && $order->end_date <= '2021-04-30'){
+                    $revenue4 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-05-01' && $order->end_date <= '2021-05-31'){
+                    $revenue5 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-06-01' && $order->end_date <= '2021-06-3'){
+                    $revenue6 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-07-01' && $order->end_date <= '2021-07-31'){
+                    $revenue7 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-08-01' && $order->end_date <= '2021-08-31'){
+                    $revenue8 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-09-01' && $order->end_date <= '2021-09-30'){
+                    $revenue9 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-10-01' && $order->end_date <= '2021-10-31'){
+                    $revenue10 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-11-01' && $order->end_date <= '2021-11-3'){
+                    $revenue11 += $order->total_price;
+                }
+                if ($order->end_date >= '2021-12-01' && $order->end_date <= '2021-12-31'){
+                    $revenue12 += $order->total_price;
+                }
+            }
+        }
+        $revenue = ['revenue1'=>$revenue1,'revenue2'=>$revenue2,'revenue3'=>$revenue3,'revenue4'=>$revenue4,'revenue5'=>$revenue5,'revenue6'=>$revenue6,'revenue7'=>$revenue7,'revenue8'=>$revenue8,'revenue9'=>$revenue9,'revenue10'=>$revenue10,'revenue11'=>$revenue11,'revenue12'=>$revenue12];
+        return response()->json($revenue);
     }
 }
