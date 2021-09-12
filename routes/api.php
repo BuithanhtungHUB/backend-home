@@ -35,7 +35,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
-        Route::get('/user-profile', [AuthController::class, 'userProfile']);
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
