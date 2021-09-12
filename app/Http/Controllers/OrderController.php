@@ -63,24 +63,27 @@ class OrderController extends Controller
     }
 
     // chủ nhà xác nhận cho thuê
-    public function rentConfirm($id, Request $request)
+    public function rentConfirm($id, $value)
     {
+        define('CONFIRM','xác nhận');
+        define('DENIED','không xác nhận');
         $order = Order::with('user')->find($id);
         $email = $order->user->email;
-        if ($request->status == 'xác nhận') {
+        if ($value == CONFIRM) {
             $content = 'approved';
-            $order->status = $request->status;
+            $order->status = $value;
             $order->save();
             (new MailController)->sendMail($email, $content);
             return response()->json(['success' => 'Bạn đã xác nhận']);
-        } else {
+        }
+        if ($value == DENIED) {
             $content = 'not approved';
-            $order->status = 'không xác nhận';
+            $order->status = $value;
             $order->save();
             (new MailController)->sendMail($email, $content);
             return response()->json(['error' => 'Bạn đã hủy xác nhận']);
-
         }
+        return response()->json(['message'=>'Bạn không được thực hiện thao tác này'],403);
     }
 
 // danh sách đơn hàng của manager
@@ -177,7 +180,6 @@ class OrderController extends Controller
             $orders = Order::with('user', 'house')->where('house_id', '=', $id)->get();
             return response()->json($orders);
         }
-        return response()->json(['error' => 'Bạn không phải manager'], 403);
     }
 
 

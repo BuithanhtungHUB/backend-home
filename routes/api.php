@@ -37,8 +37,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
-        Route::get('/user-profile', [AuthController::class, 'userProfile']);
-
         Route::prefix('/review')->group(function () {
             Route::post('/review/{id}', [ReviewController::class, 'review']);
             Route::post('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
