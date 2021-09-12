@@ -56,10 +56,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('/order')->group(function (){
         Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
         Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
-        Route::get('/get-list',[OrderController::class,'getList']);
+        Route::get('/get-list',[OrderController::class,'getListOrderManager']);
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
         Route::get('/rent-history-house/{id}', [OrderController::class, 'rentHistoryHouse']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
+        Route::get('/income-statistics/{id}/{year}',[OrderController::class,'incomeStatistics']);
     });
 });
 

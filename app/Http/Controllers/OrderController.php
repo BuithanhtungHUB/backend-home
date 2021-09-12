@@ -32,7 +32,7 @@ class OrderController extends Controller
                 }
             }
         }
-        if (!array_unique($house_id)&& $house->status == 'còn trống'){
+        if (!array_unique($house_id) && $house->status == 'còn trống') {
             $order->user_id = $user->id;
             $order->house_id = $id;
             $order->start_date = $request->start_date;
@@ -42,11 +42,10 @@ class OrderController extends Controller
             $order->save();
             (new MailController)->sendMail($email, $content);
             return response()->json(['success' => 'thành công', $user]);
-        }elseif ($house->status == 'đang nâng cấp'){
-            return response()->json(['message'=>'House đang được nâng cấp không thể thuê được'],403);
-        }
-        else{
-            return response()->json(['message'=>'House đã được cho thuê trong khoảng thời gian này'],403);
+        } elseif ($house->status == 'đang nâng cấp') {
+            return response()->json(['message' => 'House đang được nâng cấp không thể thuê được'], 403);
+        } else {
+            return response()->json(['message' => 'House đã được cho thuê trong khoảng thời gian này'], 403);
         }
 
 
@@ -84,14 +83,11 @@ class OrderController extends Controller
         }
     }
 
-// danh sách những
-    public function getList()
+// danh sách đơn hàng của manager
+    public function getListOrderManager()
     {
-        $manager = auth()->user();
-        auth()->user()->ordersManager;
-//        auth()->user()->houses;
-//        auth()->user()->orders;
-        return response()->json($manager);
+        $orders = auth()->user()->ordersManager;
+        return response()->json($orders);
     }
 
     //lịch sử thuê nhà của 1 user
@@ -182,5 +178,35 @@ class OrderController extends Controller
             return response()->json($orders);
         }
         return response()->json(['error' => 'Bạn không phải manager'], 403);
+    }
+
+
+    public function incomeStatistics($id, $year)
+    {
+        define('PAID', 'đã thanh toán');
+        $orders = auth()->user()->ordersManager
+            ->where('house_id', '=', $id)
+            ->where('status', '=', PAID)
+            ->where('end_date', '>=', $year . '-01-01')
+            ->where('end_date', '<=', $year . '-12-31');
+        $revenue = [];
+        $month = [];
+        for ($i = 0; $i < 12; $i++) {
+            if ($i < 9) {
+                $month[$i] = '0' . ($i + 1);
+            } else {
+                $month[$i] = $i + 1;
+            }
+            $revenue[$i] = 0;
+        }
+        foreach ($orders as $order) {
+            for ($i = 0; $i < count($month); $i++) {
+                $checkEndDateInMonth = date("Y-m", strtotime($order->end_date)) == $year . '-' . $month[$i];
+                if ($checkEndDateInMonth) {
+                    $revenue[$i] += $order->total_price;
+                }
+            }
+        }
+        return response()->json($revenue);
     }
 }
