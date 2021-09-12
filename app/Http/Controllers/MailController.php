@@ -15,13 +15,15 @@ class MailController extends Controller
             'order' => '[Confirmation] You have a new order',
             'cancel' => '[Confirmation] You have an cancelled order',
             'approved' => '[Confirmation] The owner have approved your order',
-            'not approved' => '[Confirmation] The owner did not approve your order'
+            'not approved' => '[Confirmation] The owner did not approve your order',
+            'review' => '[Review] New review'
         ];
         $detail = [
             'order' => 'You have an order. Please go to home from home website for more detail.',
             'cancel' => 'A customer have just cancelled their order. Please go to home from home website for more detail.',
             'approved' => 'Your order have just been approved. Hope you will have a good time.',
-            'not approved' => 'There are some problem with your order. Please contact the owner for more detail.'
+            'not approved' => 'There are some problem with your order. Please contact the owner for more detail.',
+            'review' => 'Someone just leave a review on your house. Please go check it out.'
 
         ];
 //        $email = auth()->user()->email;

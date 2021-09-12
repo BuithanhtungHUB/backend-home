@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MailController;
@@ -35,6 +37,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
+        Route::prefix('/review')->group(function () {
+            Route::post('/review/{id}', [ReviewController::class, 'review']);
+            Route::post('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
+            Route::post('/get-review', [ReviewController::class, 'getReview']);
+        });
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);

@@ -153,6 +153,7 @@ class OrderController extends Controller
             if ($order->status == 'xác nhận' && $date > $order->end_date) {
                 $order->status = 'đã thanh toán';
                 $order->save();
+                // sendmail to write rate and comment
                 $house = House::find($order->house->id);
                 $house->status = 'còn trống';
                 $house->save();
@@ -179,7 +180,6 @@ class OrderController extends Controller
             $orders = Order::with('user', 'house')->where('house_id', '=', $id)->get();
             return response()->json($orders);
         }
-        return response()->json(['error' => 'Bạn không phải manager'], 403);
     }
 
 
