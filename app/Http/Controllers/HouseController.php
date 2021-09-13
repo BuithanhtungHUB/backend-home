@@ -51,33 +51,31 @@ class HouseController extends Controller
             }
 
             return response()->json(['success' => 'Đăng nhà thành công']);
-        } else {
-            return response()->json(['error' => 'bạn không phải là manager'],403);
         }
     }
 
     // user search house ( thiếu check thời gian user search phòng đang ở status nào )
-    public function search(Request $request)
+    public function search($start_date, $end_date, $bedroom, $bathroom, $price_min, $price_max, $address)
     {
         $house_id = [];
         $orders = Order::where('status', '=', 'xác nhận')->get();
         foreach ($orders as $order) {
             if (
-                ($request->start_date >= $order->start_date && $request->start_date <= $order->end_date) ||
-                ($request->end_date >= $order->start_date && $request->end_date <= $order->end_date) ||
-                ($order->start_date <= $request->end_date && $order->start_date >= $request->start_date) ||
-                ($order->end_date <= $request->end_date && $order->end_date >= $request->start_date)
+                ($start_date >= $order->start_date && $start_date <= $order->end_date) ||
+                ($end_date >= $order->start_date && $end_date <= $order->end_date) ||
+                ($order->start_date <= $end_date && $order->start_date >= $start_date) ||
+                ($order->end_date <= $end_date && $order->end_date >= $start_date)
             ) {
                 array_push($house_id, $order->house_id);
             }
         }
         $houses = House::with('category','user','images')
             ->whereNotIn('id', array_unique($house_id))
-            ->where('price', '>=', +$request->prMin)
-            ->where('price', '<=', +$request->prMax)
-            ->orwhere('bedroom', '=', +$request->bedroom)
-            ->orwhere('bathroom', '=', +$request->bathroom)
-            ->where('address', 'LIKE', '%' . $request->address . '%')->get();
+            ->where('price', '>=', $price_min)
+            ->where('price', '<=', $price_max)
+            ->orwhere('bedroom', '=', $bedroom)
+            ->orwhere('bathroom', '=', $bathroom)
+            ->where('address', 'LIKE', '%' . $address . '%')->get();
         return response()->json($houses);
     }
 

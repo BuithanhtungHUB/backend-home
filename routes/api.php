@@ -28,6 +28,7 @@ Route::get('/get-all-name', [AuthController::class, 'getAllName']);
 Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
+Route::get('/search/{start_date}/{end_date}/{bedroom}/{bathroom}/{price_min}/{price_max}/{address}',[HouseController::class,'search']);
 Route::post('/search', [HouseController::class, 'search']);
 Route::get('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
 Route::get('/get-review/{id}', [ReviewController::class, 'getReview']);
