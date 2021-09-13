@@ -28,7 +28,7 @@ Route::get('/get-all-name', [AuthController::class, 'getAllName']);
 Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
-Route::post('/search',[HouseController::class,'search']);
+Route::get('/search/{start_date}/{end_date}/{bedroom}/{bathroom}/{price_min}/{price_max}/{address}',[HouseController::class,'search']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
