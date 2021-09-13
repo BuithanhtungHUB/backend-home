@@ -38,9 +38,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
         Route::prefix('/review')->group(function () {
-            Route::post('/review/{id}', [ReviewController::class, 'review']);
-            Route::post('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
-            Route::post('/get-review', [ReviewController::class, 'getReview']);
+            Route::get('/review/{id}', [ReviewController::class, 'review']);
+            Route::get('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
+            Route::get('/get-review/{id}', [ReviewController::class, 'getReview']);
         });
     });
     Route::prefix('/house')->group(function () {
