@@ -12,11 +12,11 @@ class MailController extends Controller
     public function sendMail($email, $content)
     {
         $title = [
-            'order' => '[Confirmation] You have a new order',
-            'cancel' => '[Confirmation] You have an cancelled order',
-            'approved' => '[Confirmation] The owner have approved your order',
-            'not approved' => '[Confirmation] The owner did not approve your order',
-            'review' => '[Review] New review'
+            'order' => '[Xác nhận] Bạn có một yêu cầu thuê nhà.',
+            'cancel' => '[Xác nhận] Đơn hàng của bạn đã bị hủy.',
+            'approved' => '[Xác nhận] Chủ nhà đã chấp nhận yêu cầu của bạn.',
+            'not approved' => '[Xác nhận] Chủ nhà đã từ chối yêu cầu của bạn.',
+            'review' => '[Review] Bạn có đánh giá mới.'
         ];
         $detail = [
             'order' => 'You have an order. Please go to home from home website for more detail.',
