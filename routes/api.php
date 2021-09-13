@@ -42,7 +42,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('/review')->group(function () {
             Route::post('/review/{id}', [ReviewController::class, 'review']);
             Route::post('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
-            Route::post('/get-review', [ReviewController::class, 'getReview']);
+            Route::post('/get-review/{id}', [ReviewController::class, 'getReview']);
         });
     });
     Route::prefix('/house')->group(function () {

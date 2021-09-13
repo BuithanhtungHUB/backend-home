@@ -42,11 +42,12 @@ class ReviewController extends Controller
         return response() -> json(round($avgRate));
     }
 
-    public function getReview(){
+    public function getReview($id){
         $house = DB::table('houses')
             ->join('reviews', 'houses.id', '=', 'reviews.house_id')
             ->join('users', 'users.id', '=', 'reviews.user_id')
             ->select('rate', 'user_name', 'comment', 'avatar')
+            ->where('houses.id', $id)
             ->get();
         return response() -> json($house);
     }
