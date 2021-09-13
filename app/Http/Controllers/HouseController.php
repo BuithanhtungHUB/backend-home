@@ -26,7 +26,7 @@ class HouseController extends Controller
     }
 
     // manager tạo house
-    public function create(CreateHouseRequest $request, House $house, Image $image)
+    public function create(CreateHouseRequest $request, House $house)
     {
         $user = User::find($request->user_id);
         if ($user->role == 'manager') {
@@ -39,11 +39,17 @@ class HouseController extends Controller
             $house->description = $request->description;
             $house->price = $request->price;
             $house->status = $request->status;
+            $house->url_map = $request->url_map;
             $house->save();
-            $image->name = $house->name;
-            $image->house_id = $house->id;
-            $image->url = $request->image;
-            $image->save();
+
+            for ($i = 0; $i < count($request->images); $i++) {
+                $image = new Image();
+                $image->name = $house->name . ' - ' . ($i + 1);
+                $image->house_id = $house->id;
+                $image->url = $request->images[$i];
+                $image->save();
+            }
+
             return response()->json(['success' => 'Đăng nhà thành công']);
         } else {
             return response()->json(['error' => 'bạn không phải là manager'],403);
