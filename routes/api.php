@@ -28,7 +28,9 @@ Route::get('/get-all-name', [AuthController::class, 'getAllName']);
 Route::get('/auto-update', [OrderController::class, 'autoUpdate']);
 Route::get('/get-all', [HouseController::class, 'getAll']);
 Route::get('/get-id/{id}', [HouseController::class, 'getById']);
-Route::post('/search',[HouseController::class,'search']);
+Route::post('/search', [HouseController::class, 'search']);
+Route::get('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
+Route::get('/get-review/{id}', [ReviewController::class, 'getReview']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
@@ -37,11 +39,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/update-user-profile', [AuthController::class, 'UpdateUserProfile']);
-        Route::prefix('/review')->group(function () {
-            Route::get('/review/{id}', [ReviewController::class, 'review']);
-            Route::get('/get-avg/{id}', [ReviewController::class, 'getAvgRate']);
-            Route::get('/get-review/{id}', [ReviewController::class, 'getReview']);
-        });
+        Route::post('/review/{id}', [ReviewController::class, 'review']);
+
     });
     Route::prefix('/house')->group(function () {
         Route::post('/create', [HouseController::class, 'create']);
@@ -51,14 +50,14 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/house-list', [UserController::class, 'getHouseList']);
         Route::post('/update-house/{id}', [UserController::class, 'updateHouse']);
     });
-    Route::prefix('/order')->group(function (){
+    Route::prefix('/order')->group(function () {
         Route::post('/house-rent/{id}', [OrderController::class, 'houseRent']);
         Route::post('/rent-confirm/{id}', [OrderController::class, 'rentConfirm']);
-        Route::get('/get-list',[OrderController::class,'getListOrderManager']);
+        Route::get('/get-list', [OrderController::class, 'getListOrderManager']);
         Route::get('/rent-history', [OrderController::class, 'rentHistory']);
         Route::get('/rent-history-house/{id}', [OrderController::class, 'rentHistoryHouse']);
         Route::post('/cancel-rent/{id}', [OrderController::class, 'cancelRent']);
-        Route::get('/income-statistics/{id}/{year}',[OrderController::class,'incomeStatistics']);
+        Route::get('/income-statistics/{id}/{year}', [OrderController::class, 'incomeStatistics']);
     });
 });
 
